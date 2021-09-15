@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    _PROJECT_NAME: "user01-report"
+    _PROJECT_NAME: "user05-course"
 
 phases:
   install:

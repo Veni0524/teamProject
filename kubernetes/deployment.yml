@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: course
-          image: username/course:latest
+          image: 879772956301.dkr.ecr.ca-central-1.amazonaws.com/course:bea9f8a904c55009362133000b6fa05d62dcf73f
           ports:
             - containerPort: 8080
           readinessProbe:

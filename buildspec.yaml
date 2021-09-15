@@ -8,24 +8,28 @@ phases:
   install:
     runtime-versions:
       java: corretto8
+      docker: 18
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - echo $IMAGE_REPO_NAME
       - echo $AWS_ACCOUNT_ID
       - echo $AWS_DEFAULT_REGION
-      - echo "commit id :" $CODEBUILD_RESOLVED_SOURCE_VERSION
-      - echo "tag name :" $CODEBUILD_SOURCE_VERSION
-      - echo "tag name2 :" $CODEBUILD_WEBHOOK_TRIGGER
-      - TAG_NAME=$(echo $CODEBUILD_WEBHOOK_TRIGGER | awk -F'/' '{print $2}')
-      - echo "tag name3 :" $TAG_NAME
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo start command
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - echo "tag name4 :" $TAG_NAME
+      - mvn package -Dmaven.test.skip=true
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION  .
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+
+cache:
+  paths:
+    - '/root/.m2/**/*'
